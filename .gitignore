@@ -49,8 +49,21 @@ uploads/
 *.db
 *.sqlite
 
-# backend-api (shouldn't be in frontend build)
-backend-api/
+# backend-api (exclude most files but allow config files)
+backend-api/**/*
+!backend-api/api/
+!backend-api/api/**
+!backend-api/requirements.txt
+!backend-api/README.md
+!backend-api/railway.json
+!backend-api/nixpacks.toml
+!backend-api/.python-version
+!backend-api/runtime.txt
+backend-api/venv/
+backend-api/__pycache__/
+backend-api/*.pyc
+backend-api/.env
+backend-api/.env.local
 
 # IDE
 .vscode/
