@@ -13,8 +13,28 @@ import uuid
 from datetime import datetime
 
 # Add the Deal Fit directory to the path
-deal_fit_path = Path(__file__).parent.parent.parent.parent / "Deal Fit"
+# Try multiple possible paths
+current_file = Path(__file__).resolve()
+possible_paths = [
+    current_file.parent.parent.parent.parent / "Deal Fit",  # From Landing Page/backend-api/api/main.py
+    current_file.parent.parent.parent / "Deal Fit",  # Alternative structure
+    Path.cwd().parent / "Deal Fit",  # From backend-api directory
+]
+
+deal_fit_path = None
+for path in possible_paths:
+    if path.exists() and (path / "rag_pipeline.py").exists():
+        deal_fit_path = path
+        break
+
+if deal_fit_path is None:
+    raise ImportError(
+        f"Could not find Deal Fit directory. Tried: {[str(p) for p in possible_paths]}. "
+        f"Please ensure the Deal Fit folder is accessible."
+    )
+
 sys.path.insert(0, str(deal_fit_path))
+print(f"✓ Found Deal Fit directory at: {deal_fit_path}")
 
 # Import your existing modules
 from rag_pipeline import InvestorRAGPipeline
