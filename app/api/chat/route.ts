@@ -21,6 +21,13 @@ export async function POST(request: NextRequest) {
     const rawApiUrl = process.env.NEXT_PUBLIC_API_URL
     const API_URL = normalizeApiUrl(rawApiUrl)
     
+    // Debug logging (will appear in Vercel function logs)
+    console.log('=== Chat API Debug ===')
+    console.log('Raw API URL from env:', rawApiUrl)
+    console.log('Normalized API URL:', API_URL)
+    console.log('NODE_ENV:', process.env.NODE_ENV)
+    console.log('VERCEL:', process.env.VERCEL)
+    
     const body = await request.json()
     const { query } = body
 
@@ -43,6 +50,7 @@ export async function POST(request: NextRequest) {
     // Check rawApiUrl, not API_URL (which has a default)
     if (isProduction && (!rawApiUrl || isLocalhost)) {
       console.warn('Backend API URL not configured in production. Using fallback response.')
+      console.warn('isProduction:', isProduction, 'rawApiUrl:', rawApiUrl, 'isLocalhost:', isLocalhost)
       return NextResponse.json({
         response: `**Backend API Not Configured**
 
@@ -74,7 +82,10 @@ Once configured, I'll be able to provide real investor recommendations based on 
     const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
 
     try {
-      const backendResponse = await fetch(`${API_URL}/api/chat`, {
+      const backendUrl = `${API_URL}/api/chat`
+      console.log('Attempting to fetch from backend:', backendUrl)
+      
+      const backendResponse = await fetch(backendUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,6 +96,8 @@ Once configured, I'll be able to provide real investor recommendations based on 
         }),
         signal: controller.signal,
       })
+      
+      console.log('Backend response status:', backendResponse.status)
 
       clearTimeout(timeoutId)
 
