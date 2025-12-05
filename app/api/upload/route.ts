@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-const UPLOAD_DIR = join(process.cwd(), 'uploads')
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,22 +26,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Ensure upload directory exists
-    if (!existsSync(UPLOAD_DIR)) {
-      await mkdir(UPLOAD_DIR, { recursive: true })
-    }
-
-    // Save file temporarily
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-    const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-    const filepath = join(UPLOAD_DIR, filename)
-
-    await writeFile(filepath, buffer)
-
-    // Send to backend API for processing
+    // Forward file directly to backend API (no local storage needed in serverless)
     const backendFormData = new FormData()
-    backendFormData.append('file', new Blob([buffer]), file.name)
+    backendFormData.append('file', file)
 
     const backendResponse = await fetch(`${API_URL}/api/upload`, {
       method: 'POST',
@@ -53,7 +36,6 @@ export async function POST(request: NextRequest) {
     })
 
     if (!backendResponse.ok) {
-      // Clean up uploaded file if backend fails
       const error = await backendResponse.json().catch(() => ({
         error: 'Backend upload failed',
       }))
@@ -61,6 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     const backendData = await backendResponse.json()
+    const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
 
     return NextResponse.json({
       id: backendData.id || filename,
