@@ -18,20 +18,35 @@ export async function POST(request: NextRequest) {
     // For now, we'll pass it through the request body
     const { pitchDeckText } = body
 
-    // Check if API URL is configured
-    if (!API_URL || API_URL === 'http://localhost:8000') {
-      console.warn('Backend API URL not configured. Using fallback response.')
+    // Check if API URL is configured (only block localhost in production)
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1'
+    const isLocalhost = API_URL.includes('localhost') || API_URL.includes('127.0.0.1')
+    
+    if (isProduction && (!API_URL || isLocalhost)) {
+      console.warn('Backend API URL not configured in production. Using fallback response.')
       return NextResponse.json({
-        response: `I understand you're asking: "${query}". 
+        response: `**Backend API Not Configured**
 
-To use the full AI-powered investor matching features, please configure the backend API URL in your environment variables (NEXT_PUBLIC_API_URL).
+To enable AI-powered investor matching on Vercel, you need to:
 
-For now, here's what I can help with:
-- Finding investors by industry, stage, or location
-- Matching investors to your pitch deck
-- Getting contact information for relevant investors
+1. **Deploy your FastAPI backend** to a hosting service:
+   - Railway (railway.app) - Recommended
+   - Render (render.com)
+   - Fly.io (fly.io)
+   - Or any Python hosting service
 
-Please ensure your backend API is running and the NEXT_PUBLIC_API_URL environment variable is set correctly.`,
+2. **Set the environment variable in Vercel:**
+   - Go to Vercel Dashboard → Your Project → Settings → Environment Variables
+   - Add: \`NEXT_PUBLIC_API_URL\` = your deployed backend URL (e.g., https://your-app.railway.app)
+   - Select all environments (Production, Preview, Development)
+   - Click Save and redeploy
+
+3. **Ensure your backend has:**
+   - Access to the investor database files
+   - \`ANTHROPIC_API_KEY\` configured
+   - All Python dependencies installed
+
+Once configured, I'll be able to provide real investor recommendations based on your pitch deck and query.`,
       })
     }
 
