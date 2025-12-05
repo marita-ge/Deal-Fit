@@ -33,3 +33,4 @@ export function validatePDF(file: File): { valid: boolean; error?: string } {
   }
   return { valid: true }
 }
+

@@ -159,3 +159,4 @@ Use a serverless framework to deploy the FastAPI app.
 - The backend maintains pitch deck state in memory (single instance)
 - For production, consider using a session store or database
 - Vector database is initialized on first request (may take a few seconds)
+

@@ -15,10 +15,16 @@ function normalizeApiUrl(url: string | undefined): string {
   return url
 }
 
-const API_URL = normalizeApiUrl(process.env.NEXT_PUBLIC_API_URL)
-
 export async function POST(request: NextRequest) {
   try {
+    // Read environment variable at request time
+    const rawApiUrl = process.env.NEXT_PUBLIC_API_URL
+    const API_URL = normalizeApiUrl(rawApiUrl)
+    
+    console.log('=== Upload API Debug ===')
+    console.log('Raw API URL from env:', rawApiUrl)
+    console.log('Normalized API URL:', API_URL)
+    
     const formData = await request.formData()
     const file = formData.get('file') as File | null
 
@@ -45,10 +51,13 @@ export async function POST(request: NextRequest) {
     const backendFormData = new FormData()
     backendFormData.append('file', file)
 
+    console.log('Attempting to upload to:', `${API_URL}/api/upload`)
     const backendResponse = await fetch(`${API_URL}/api/upload`, {
       method: 'POST',
       body: backendFormData,
     })
+    
+    console.log('Backend upload response status:', backendResponse.status)
 
     if (!backendResponse.ok) {
       const error = await backendResponse.json().catch(() => ({

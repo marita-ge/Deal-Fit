@@ -46,15 +46,10 @@ import config
 
 app = FastAPI(title="Deal Fit API", version="1.0.0")
 
-# CORS middleware
+# CORS middleware - Allow all origins for now (can be restricted later)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "https://*.vercel.app",
-        # Add your production domain here
-    ],
+    allow_origins=["*"],  # Allow all origins - update this in production with specific domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

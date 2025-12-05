@@ -126,9 +126,11 @@ Once configured, I'll be able to provide real investor recommendations based on 
       // Network error or connection refused
       if (fetchError instanceof Error) {
         console.error('Backend fetch error:', fetchError.message)
+        console.error('Full error:', fetchError)
+        const errorMessage = fetchError.message || 'Unknown error'
         return NextResponse.json(
           { 
-            error: `Unable to connect to backend API at ${API_URL}. Please ensure the backend is running and accessible. Error: ${fetchError.message}` 
+            error: `Unable to connect to backend API at ${API_URL}/api/chat. Error: ${errorMessage}. Please check: 1) Railway backend is running, 2) NEXT_PUBLIC_API_URL is set correctly in Vercel, 3) Backend URL is accessible.` 
           },
           { status: 503 }
         )
