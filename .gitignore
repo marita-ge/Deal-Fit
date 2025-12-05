@@ -44,6 +44,14 @@ env/
 uploads/
 *.pdf
 
+# database files
+*.sqlite3
+*.db
+*.sqlite
+
+# backend-api (shouldn't be in frontend build)
+backend-api/
+
 # IDE
 .vscode/
 .idea/
