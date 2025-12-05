@@ -49,7 +49,7 @@ uploads/
 *.db
 *.sqlite
 
-# backend-api (exclude most files but allow config files)
+# backend-api (exclude most files but allow necessary files)
 backend-api/**/*
 !backend-api/api/
 !backend-api/api/**
@@ -59,11 +59,17 @@ backend-api/**/*
 !backend-api/nixpacks.toml
 !backend-api/.python-version
 !backend-api/runtime.txt
+!backend-api/*.py
+!backend-api/DATA/
+!backend-api/DATA/**
+!backend-api/vector_db/
 backend-api/venv/
 backend-api/__pycache__/
 backend-api/*.pyc
 backend-api/.env
 backend-api/.env.local
+backend-api/.DS_Store
+backend-api/DATA/.DS_Store
 
 # IDE
 .vscode/

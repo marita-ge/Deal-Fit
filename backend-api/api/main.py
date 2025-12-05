@@ -14,18 +14,19 @@ from datetime import datetime
 
 # Add the Deal Fit directory to the path
 # Try multiple possible paths (including Railway deployment structure)
+# First, try current directory (backend-api) where files are copied
 current_file = Path(__file__).resolve()
 current_dir = Path.cwd()
+backend_api_dir = current_file.parent.parent  # backend-api directory
 
 possible_paths = [
+    backend_api_dir,  # Files are copied to backend-api directory
+    current_dir,  # Current working directory (should be backend-api on Railway)
+    Path.cwd(),  # Current working directory
     current_file.parent.parent.parent.parent / "Deal Fit",  # From Landing Page/backend-api/api/main.py
     current_file.parent.parent.parent / "Deal Fit",  # Alternative structure
     Path.cwd().parent / "Deal Fit",  # From backend-api directory
-    Path.cwd() / "Deal Fit",  # Same directory (Railway might deploy differently)
-    Path("/app") / "Deal Fit",  # Railway default app directory
-    Path("/app") / ".." / "Deal Fit",  # Railway parent directory
-    current_dir / "Deal Fit",  # Current working directory
-    current_dir.parent / "Deal Fit",  # Parent of current directory
+    Path("/app"),  # Railway default app directory
 ]
 
 deal_fit_path = None
@@ -36,19 +37,20 @@ for path in possible_paths:
         break
 
 if deal_fit_path is None:
-    print(f"⚠️ WARNING: Could not find Deal Fit directory.")
+    print(f"⚠️ WARNING: Could not find Deal Fit files.")
     print(f"Current working directory: {Path.cwd()}")
     print(f"Current file location: {current_file}")
+    print(f"Backend API directory: {backend_api_dir}")
     print(f"Tried paths: {[str(p) for p in possible_paths]}")
     raise ImportError(
-        f"Could not find Deal Fit directory. Tried: {[str(p) for p in possible_paths]}. "
-        f"Please ensure the Deal Fit folder is accessible. Current dir: {Path.cwd()}"
+        f"Could not find Deal Fit files (rag_pipeline.py). Tried: {[str(p) for p in possible_paths]}. "
+        f"Please ensure the Deal Fit files are in the backend-api directory. Current dir: {Path.cwd()}"
     )
 
-# Change working directory to Deal Fit folder so relative paths in config work
+# Change working directory to where the files are so relative paths in config work
 os.chdir(str(deal_fit_path))
 sys.path.insert(0, str(deal_fit_path))
-print(f"✓ Found Deal Fit directory at: {deal_fit_path}")
+print(f"✓ Found Deal Fit files at: {deal_fit_path}")
 print(f"✓ Changed working directory to: {deal_fit_path}")
 
 # Import your existing modules
