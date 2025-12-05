@@ -68,17 +68,25 @@ export default function ChatInput() {
 
       addMessage(assistantMessage)
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : 'Failed to send message'
-      )
+      let errorMessage = 'Failed to send message'
       
-      const errorMessage = {
+      if (error instanceof Error) {
+        errorMessage = error.message
+        // Check if it's a network error
+        if (error.message.includes('fetch failed') || error.message.includes('Failed to fetch')) {
+          errorMessage = 'Unable to connect to the server. Please check your internet connection and ensure the backend API is running.'
+        }
+      }
+      
+      setError(errorMessage)
+      
+      const assistantErrorMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant' as const,
-        content: `Error: ${error instanceof Error ? error.message : 'Something went wrong. Please try again.'}`,
+        content: `⚠️ **Error**: ${errorMessage}\n\nPlease ensure:\n- Your backend API is running\n- The NEXT_PUBLIC_API_URL environment variable is set correctly\n- Your internet connection is stable`,
         timestamp: new Date(),
       }
-      addMessage(errorMessage)
+      addMessage(assistantErrorMessage)
     } finally {
       setLoading(false)
     }
