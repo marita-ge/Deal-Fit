@@ -122,6 +122,7 @@ async def upload_pitch_deck(file: UploadFile = File(...)):
     
     Extracts text from the PDF and stores it for use in chat queries.
     """
+    file_path = None
     try:
         # Validate file type
         if not file.filename or not file.filename.lower().endswith('.pdf'):
@@ -130,13 +131,11 @@ async def upload_pitch_deck(file: UploadFile = File(...)):
         # Read file content
         contents = await file.read()
         
-        # Save to temporary location
-        upload_dir = Path("uploads")
-        upload_dir.mkdir(exist_ok=True)
-        
+        # Use /tmp directory for serverless compatibility (only writable location)
         file_id = str(uuid.uuid4())
-        file_path = upload_dir / f"{file_id}.pdf"
+        file_path = Path("/tmp") / f"{file_id}.pdf"
         
+        # Write to temp file
         with open(file_path, "wb") as f:
             f.write(contents)
         
@@ -153,6 +152,13 @@ async def upload_pitch_deck(file: UploadFile = File(...)):
                 status_code=500,
                 detail=f"Error extracting text from PDF: {str(e)}"
             )
+        finally:
+            # Clean up temp file
+            if file_path and file_path.exists():
+                try:
+                    file_path.unlink()
+                except Exception:
+                    pass  # Ignore cleanup errors
         
         return UploadResponse(
             id=file_id,
@@ -162,8 +168,20 @@ async def upload_pitch_deck(file: UploadFile = File(...)):
         )
     
     except HTTPException:
+        # Clean up on error
+        if file_path and file_path.exists():
+            try:
+                file_path.unlink()
+            except Exception:
+                pass
         raise
     except Exception as e:
+        # Clean up on error
+        if file_path and file_path.exists():
+            try:
+                file_path.unlink()
+            except Exception:
+                pass
         print(f"Error in upload endpoint: {str(e)}")
         raise HTTPException(
             status_code=500,
