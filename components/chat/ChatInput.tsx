@@ -1,14 +1,24 @@
 'use client'
 
-import { useState, KeyboardEvent } from 'react'
+import { useState, KeyboardEvent, useRef, useEffect } from 'react'
 import { Send, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useChatStore } from '@/lib/store'
+import { cn } from '@/lib/utils'
 
 export default function ChatInput() {
-  const { isLoading, addMessage, setLoading, setError } = useChatStore()
+  const { isLoading, addMessage, setLoading, setError, currentPitchDeck } = useChatStore()
   const [input, setInput] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Auto-resize textarea
+  useEffect(() => {
+    const textarea = textareaRef.current
+    if (textarea) {
+      textarea.style.height = 'auto'
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`
+    }
+  }, [input])
 
   const handleSubmit = async () => {
     if (!input.trim() || isLoading) return
@@ -25,9 +35,12 @@ export default function ChatInput() {
     setLoading(true)
     setError(null)
 
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+    }
+
     try {
-      const { currentPitchDeck } = useChatStore.getState()
-      
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -71,7 +84,7 @@ export default function ChatInput() {
     }
   }
 
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSubmit()
@@ -79,30 +92,40 @@ export default function ChatInput() {
   }
 
   return (
-    <div className="sticky bottom-0 border-t bg-background p-4">
-      <div className="flex gap-2">
-        <Input
+    <div className="mx-auto w-full max-w-3xl px-4 pb-4 pt-4">
+      <div className="relative flex items-end gap-2 rounded-2xl border border-border bg-background shadow-sm transition-shadow focus-within:shadow-md">
+        <textarea
+          ref={textareaRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Ask about investors... (e.g., 'Find investors for fintech startups')"
+          onKeyDown={handleKeyDown}
+          placeholder="Message Investor Match..."
           disabled={isLoading}
-          className="flex-1"
-        />
-        <Button
-          onClick={handleSubmit}
-          disabled={!input.trim() || isLoading}
-          size="default"
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Send className="h-4 w-4" />
+          rows={1}
+          className={cn(
+            'max-h-[200px] w-full resize-none rounded-2xl border-0 bg-transparent px-4 py-3',
+            'text-sm leading-6 placeholder:text-muted-foreground',
+            'focus:outline-none focus:ring-0',
+            'disabled:cursor-not-allowed disabled:opacity-50'
           )}
-        </Button>
+        />
+        <div className="flex items-center gap-1 p-2">
+          <Button
+            onClick={handleSubmit}
+            disabled={!input.trim() || isLoading}
+            size="sm"
+            className="h-8 w-8 rounded-lg p-0"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">
-        Press Enter to send, Shift+Enter for new line
+      <p className="mt-2 text-center text-xs text-muted-foreground">
+        Investor Match can make mistakes. Check important info.
       </p>
     </div>
   )

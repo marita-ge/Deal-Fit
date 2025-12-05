@@ -77,76 +77,75 @@ export default function DeckUpload() {
 
   if (currentPitchDeck) {
     return (
-      <Card className="border-2 border-primary/50">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <File className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">{currentPitchDeck.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  Uploaded {formatDate(currentPitchDeck.uploadedAt)}
-                </p>
-              </div>
+      <div className="mb-4 rounded-lg border border-border bg-card p-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-primary/10">
+              <File className="h-4 w-4 text-primary" />
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={removeDeck}
-              disabled={uploading}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium">{currentPitchDeck.name}</p>
+              <p className="text-xs text-muted-foreground">
+                Ready to use
+              </p>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={removeDeck}
+            disabled={uploading}
+            className="h-8 w-8 shrink-0 p-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card
+    <div
       {...getRootProps()}
-      className={`cursor-pointer border-2 border-dashed transition-colors ${
+      className={`cursor-pointer rounded-lg border-2 border-dashed transition-colors ${
         isDragActive
           ? 'border-primary bg-primary/5'
-          : 'border-muted-foreground/25 hover:border-primary/50'
+          : 'border-border hover:border-primary/50 hover:bg-accent/50'
       }`}
     >
-      <CardContent className="p-8">
-        <input {...getInputProps()} />
-        <div className="flex flex-col items-center justify-center gap-4 text-center">
+      <input {...getInputProps()} />
+      <div className="p-6">
+        <div className="flex flex-col items-center justify-center gap-3 text-center">
           {uploading ? (
             <>
-              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <div>
-                <p className="font-medium">Uploading pitch deck...</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm font-medium">Uploading pitch deck...</p>
+                <p className="text-xs text-muted-foreground">
                   Please wait while we process your PDF
                 </p>
               </div>
             </>
           ) : (
             <>
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <Upload className="h-8 w-8 text-primary" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                <Upload className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-medium">
+                <p className="text-sm font-medium">
                   {isDragActive
                     ? 'Drop your pitch deck here'
-                    : 'Drag & drop your pitch deck here'}
+                    : 'Upload your pitch deck'}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  or click to browse (PDF, max 10MB)
+                <p className="text-xs text-muted-foreground">
+                  PDF files up to 10MB
                 </p>
               </div>
             </>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
