@@ -1,9 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+// Normalize API URL to ensure it has a protocol
+function normalizeApiUrl(url: string | undefined): string {
+  if (!url) return 'http://localhost:8000'
+  
+  // Remove trailing slash if present
+  url = url.trim().replace(/\/$/, '')
+  
+  // If URL doesn't start with http:// or https://, add https://
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    return `https://${url}`
+  }
+  
+  return url
+}
 
 export async function POST(request: NextRequest) {
   try {
+    // Read environment variable at request time (not module load time)
+    const rawApiUrl = process.env.NEXT_PUBLIC_API_URL
+    const API_URL = normalizeApiUrl(rawApiUrl)
+    
     const body = await request.json()
     const { query } = body
 
@@ -22,7 +39,9 @@ export async function POST(request: NextRequest) {
     const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1'
     const isLocalhost = API_URL.includes('localhost') || API_URL.includes('127.0.0.1')
     
-    if (isProduction && (!API_URL || isLocalhost)) {
+    // Only show fallback if in production AND (no env var set OR it's localhost)
+    // Check rawApiUrl, not API_URL (which has a default)
+    if (isProduction && (!rawApiUrl || isLocalhost)) {
       console.warn('Backend API URL not configured in production. Using fallback response.')
       return NextResponse.json({
         response: `**Backend API Not Configured**

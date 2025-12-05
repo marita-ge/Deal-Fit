@@ -4,12 +4,6 @@ const nextConfig = {
   images: {
     domains: ['localhost'],
   },
-  // Increase body size limit for PDF uploads
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
 }
 
 module.exports = nextConfig

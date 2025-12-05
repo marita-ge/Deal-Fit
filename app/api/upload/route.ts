@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+// Normalize API URL to ensure it has a protocol
+function normalizeApiUrl(url: string | undefined): string {
+  if (!url) return 'http://localhost:8000'
+  
+  // Remove trailing slash if present
+  url = url.trim().replace(/\/$/, '')
+  
+  // If URL doesn't start with http:// or https://, add https://
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    return `https://${url}`
+  }
+  
+  return url
+}
+
+const API_URL = normalizeApiUrl(process.env.NEXT_PUBLIC_API_URL)
 
 export async function POST(request: NextRequest) {
   try {
