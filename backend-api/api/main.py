@@ -33,8 +33,11 @@ if deal_fit_path is None:
         f"Please ensure the Deal Fit folder is accessible."
     )
 
+# Change working directory to Deal Fit folder so relative paths in config work
+os.chdir(str(deal_fit_path))
 sys.path.insert(0, str(deal_fit_path))
 print(f"✓ Found Deal Fit directory at: {deal_fit_path}")
+print(f"✓ Changed working directory to: {deal_fit_path}")
 
 # Import your existing modules
 from rag_pipeline import InvestorRAGPipeline
