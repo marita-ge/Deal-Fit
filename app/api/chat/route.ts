@@ -84,6 +84,7 @@ Once configured, I'll be able to provide real investor recommendations based on 
     try {
       const backendUrl = `${API_URL}/api/chat`
       console.log('Attempting to fetch from backend:', backendUrl)
+      console.log('Request body:', JSON.stringify({ query, pitch_deck_text: pitchDeckText || null }))
       
       const backendResponse = await fetch(backendUrl, {
         method: 'POST',
@@ -98,6 +99,11 @@ Once configured, I'll be able to provide real investor recommendations based on 
       })
       
       console.log('Backend response status:', backendResponse.status)
+      console.log('Backend response headers:', Object.fromEntries(backendResponse.headers.entries()))
+      
+      // Log response text for debugging
+      const responseText = await backendResponse.clone().text()
+      console.log('Backend response text (first 500 chars):', responseText.substring(0, 500))
 
       clearTimeout(timeoutId)
 

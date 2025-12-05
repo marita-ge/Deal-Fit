@@ -13,24 +13,36 @@ import uuid
 from datetime import datetime
 
 # Add the Deal Fit directory to the path
-# Try multiple possible paths
+# Try multiple possible paths (including Railway deployment structure)
 current_file = Path(__file__).resolve()
+current_dir = Path.cwd()
+
 possible_paths = [
     current_file.parent.parent.parent.parent / "Deal Fit",  # From Landing Page/backend-api/api/main.py
     current_file.parent.parent.parent / "Deal Fit",  # Alternative structure
     Path.cwd().parent / "Deal Fit",  # From backend-api directory
+    Path.cwd() / "Deal Fit",  # Same directory (Railway might deploy differently)
+    Path("/app") / "Deal Fit",  # Railway default app directory
+    Path("/app") / ".." / "Deal Fit",  # Railway parent directory
+    current_dir / "Deal Fit",  # Current working directory
+    current_dir.parent / "Deal Fit",  # Parent of current directory
 ]
 
 deal_fit_path = None
 for path in possible_paths:
+    path = path.resolve()
     if path.exists() and (path / "rag_pipeline.py").exists():
         deal_fit_path = path
         break
 
 if deal_fit_path is None:
+    print(f"⚠️ WARNING: Could not find Deal Fit directory.")
+    print(f"Current working directory: {Path.cwd()}")
+    print(f"Current file location: {current_file}")
+    print(f"Tried paths: {[str(p) for p in possible_paths]}")
     raise ImportError(
         f"Could not find Deal Fit directory. Tried: {[str(p) for p in possible_paths]}. "
-        f"Please ensure the Deal Fit folder is accessible."
+        f"Please ensure the Deal Fit folder is accessible. Current dir: {Path.cwd()}"
     )
 
 # Change working directory to Deal Fit folder so relative paths in config work
