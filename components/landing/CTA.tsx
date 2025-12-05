@@ -9,7 +9,7 @@ interface CalendlyButtonProps {
 }
 
 function CalendlyButton({ url }: CalendlyButtonProps) {
-  const calendlyUrl = url || process.env.NEXT_PUBLIC_CALENDLY_URL
+  const calendlyUrl = url || process.env.NEXT_PUBLIC_CALENDLY_URL || 'https://calendly.com/marita_ge/30min'
 
   if (!calendlyUrl) {
     return null
