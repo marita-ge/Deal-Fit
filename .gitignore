@@ -59,6 +59,7 @@ backend-api/**/*
 !backend-api/nixpacks.toml
 !backend-api/.python-version
 !backend-api/runtime.txt
+!backend-api/Dockerfile
 !backend-api/*.py
 !backend-api/DATA/
 !backend-api/DATA/**
