@@ -175,11 +175,6 @@ export default function ChatInterface() {
 
       {/* Input Area */}
       <div className="border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        {!currentPitchDeck && messages.length === 0 && (
-          <div className="mx-auto max-w-3xl px-4 pt-4">
-            <DeckUpload />
-          </div>
-        )}
         <ChatInput />
       </div>
     </div>
